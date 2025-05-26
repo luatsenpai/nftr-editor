@@ -2,10 +2,10 @@ title: nftr-editor
 description: A website to help make editing nftr files easier
 theme: jekyll-theme-primer
 baseurl: "/nftr-editor"
-url: "https://luatsenpai.github.io/nftr-editor/" # Replace with your GitHub Pages URL
+url: "https://luatsenpai.github.io/nftr-editor"
 github:
   is_project_page: true
-  repository_url: https://luatsenpai.github.io/nftr-editor/
+  repository_url: https://github.com/luatsenpai/nftr-editor
 readme_index:
   enabled: false
 plugins:
