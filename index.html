@@ -9,165 +9,157 @@ show_version: true
 ---
 <html lang="en">
 <head>
-	{% include head.html %}
-	<link rel="stylesheet" type="text/css" media="screen" href="{{ 'css/style.css?v=' | append: site.github.build_revision }}">
+  {% include head.html %}
+  <link rel="stylesheet" type="text/css" media="screen" href="{{ site.baseurl }}/css/style.css?v={{ site.github.build_revision }}">
 </head>
 <body>
-	<div class="content">
-{% comment %} {% include nav.html %} {% endcomment %}
-
-		<main>
-			<div class="container-fluid">
-				<noscript>
-					<div class="row">
-						<div class="col-sm-12">
-							<div class="p-2 col-sm-12 bg-danger rounded text-center">
-								<h3>This site requires JavaScript!</h3>
-							</div>
-						</div>
-					</div>
-				</noscript>
-				<div class="row">
-					<div class="col-sm-12">
-						<h2>Select a font:</h2>
-						<div class="input-group mb-3">
-							<input class="form-control" id="fontSelector" type="file" accept=".nftr" onchange="loadFont(this.files[0])">
-							<label class="input-group-text" for="fontSelector">Select a font</label>
-							<input class="btn btn-outline-primary collapse" id="saveButton" type="button" onclick="saveFont()" value="Save">
-						</div>
-					</div>
-				</div>
-				<div class="collapse" id="editBox">
-					<div class="row">
-
-						<div class="col-xl-6">
-							<h2>Preview</h2>
-							<div class="row">
-								<div class="col-sm-6">
-									<textarea id="input" onkeyup="updateBitmap()" placeholder="Type here"></textarea>
-									<br>
-									<canvas id="canvas" width="256" height="192"></canvas>
-									<br>
-									Background color:
-									<input class="btn btn-outline-secondary" id="bgColor" type="color" value="#FF00FF" onchange="setBg(this.value)">
-									<br>
-									Background image:
-									<input class="form-control" id="bgImage" placeholder="https://example.test/background.png" onchange="setBg(this.value)">
-									Scale:
-									<input class="form-control" id="previewScale" type="number" min="1" max="8" value="1" onchange="setScale(this.value)">
-								</div>
-								<div class="col-sm-6">
-									<h3>Palette colors:</h3>
-									<div class="btn-group brush-btn-box">
-										<input class="btn btn-outline-secondary" id="palette0" type="color" value="#FF00FF" onchange="updatePalette(0)">
-										<input class="btn btn-outline-secondary" id="palette1" type="color" value="#929292" onchange="updatePalette(1)">
-										<input class="btn btn-outline-secondary" id="palette2" type="color" value="#434343" onchange="updatePalette(2)">
-										<input class="btn btn-outline-secondary" id="palette3" type="color" value="#000000" onchange="updatePalette(3)">
-									</div>
-									<br>
-									<br>
-									<div class="btn-group brush-btn-box">
-										<input class="btn btn-outline-secondary" type="button" value="Clear 1" onclick="clearPalette(0)">
-										<input class="btn btn-outline-secondary" type="button" value="Clear 2" onclick="clearPalette(1)">
-										<input class="btn btn-outline-secondary" type="button" value="Clear 3" onclick="clearPalette(2)">
-										<input class="btn btn-outline-secondary" type="button" value="Clear 4" onclick="clearPalette(3)">
-									</div>
-									<br>
-									<br>
-									<input class="form-control bg-light text-dark" id="extraKerning" type="number" placeholder="Adjust kerning" onchange="updateExtraKerning()">
-									<br>
-									<h3>Font:</h3>
-									<label for="inputFont">Input font</label>
-									<input class="form-control bg-light text-dark" id="inputFont" type="text" placeholder="Sans-Serif" onchange="updateFont()">
-									<div class="form-check form-check-inline">
-										<input class="form-check-input" id="fontWeight" type="checkbox" onchange="updateFont()">
-										<label class="form-check-label" for="fontWeight">Bold</label>
-									</div>
-									<div class="form-check form-check-switch form-check-inline">
-										<input class="form-check-input" id="fontStyle" type="checkbox" onchange="updateFont()">
-										<label class="form-check-label" for="fontStyle">Italic</label>
-									</div>
-									<br>
-									<button class="btn btn-outline-secondary" type="button" onclick="generateFromFont()">Generate from font</button>
-									<br>
-									<label for="maxDifference"><abbr title="The maximum amount a pixel can be from the set color and still be set to it. Set to 0 for unlimited. Lower numbers make the font thinner.">Threshold</abbr></label>
-									<input class="form-control bg-light text-dark" id="maxDifference" type="number" placeholder="0" min="0" max="255">
-								</div>
-							</div>
-						</div>
-						<div class="col-xl-6">
-							<h2>Letter editing</h2>
-							<div class="row">
-								<div class="col-sm-6">
-									<label for="letterInput">Letter</label>
-									<input class="form-control bg-light text-dark" id="letterInput" type="text" placeholder="Letter" onkeyup="loadLetter()">
-									<br>
-									<table id="letter" onmouseenter="keyListener(true)" onmouseleave="keyListener(false)"></table>
-									<br>
-									<input class="btn btn-outline-secondary" type="button" onclick="addCharacters()" value="Add characters">
-									<input class="btn btn-outline-secondary" type="button" onclick="removeCharacters()" value="Remove characters">
-									<br>
-									<br>
-									<input class="btn btn-outline-secondary" type="button" onclick="resize()" value="Resize font">
-								</div>
-								<div class="col-sm-6">
-									<label><abbr title="While mouse is over the letter image, hold Shift for color 1 or press 1 - 4 for the respective color">Brush color</abbr></label>
-									<div class="btn-group brush-btn-box">
-										<input class="btn" id="brushColor0" type="button" onclick="updateBrush(0)" value=" ">
-										<input class="btn" id="brushColor1" type="button" onclick="updateBrush(1)" value=" ">
-										<input class="btn" id="brushColor2" type="button" onclick="updateBrush(2)" value=" ">
-										<input class="btn" id="brushColor3" type="button" onclick="updateBrush(3)" value=" ">
-									</div>
-									<br>
-									<br>
-									<label for="left"><abbr title="Whitespace to the left of the letter (the graphic should be fully agaist the left)">Left spacing</abbr></label>
-									<input class="form-control bg-light text-dark" id="left" type="number" min="0" onchange="updateWidths()">
-									<br>
-									<label for="bitmapWidth"><abbr title="The width of just the letter graphic">Bitmap width</abbr></label>
-									<input class="form-control bg-light text-dark" id="bitmapWidth" type="number" min="0" onchange="updateWidths()">
-									<br>
-									<label for="totalWidth"><abbr title="The total width, including left and right spacing">Total width</abbr></label>
-									<input class="form-control bg-light text-dark" id="totalWidth" type="number" min="0" onchange="updateWidths()">
-									<br>
-									<input class="btn btn-outline-secondary" type="button" onclick="saveLetter()" value="Save">
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-6">
-							<h2>Import</h2>
-							<div class="row">
-								<div class="col-sm-6">
-									<div class="input-group">
-										<input class="form-control" id="imageSelector" type="file" accept="image/*" onchange="importImage(this.files[0])">
-										<label class="input-group-text" for="imageSelector">Import image</label>
-									</div>
-								</div>
-								<br><br>
-								<div class="col-sm-6">
-									<div class="input-group">
-										<input class="form-control" id="sizesSelector" type="file" accept="application/json" onchange="importSizes(this.files[0])">
-										<label class="input-group-text" for="sizesSelector">Import sizes</label>
-									</div>
-								</div>
-							</div>
-						</div>
-						<div class="col-md-6">
-							<h2>Export</h2>
-							<button class="btn btn-outline-secondary" type="button" onclick="exportImage()">Export image</button>
-							<button class="btn btn-outline-secondary" type="button" onclick="exportSizes()">Export sizes</button>
-						</div>
-					</div>
-				</div>
-			</div>
-		</main>
-	</div>
-
-	{% include footer.html %}
-
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/encoding-japanese/1.0.30/encoding.min.js" integrity="sha512-rqL5c2sp6KdRdB27P16dSYF9J3/WrP+UHrKuzWiN6304wz0bzv1ZE8G+zieQGSnNfg9UasgKNOQzv4yir7+Prg==" crossorigin="anonymous"></script>
-	<script src="js/nftr.js"></script>
+  <div class="content">
+    {% comment %} {% include nav.html %} {% endcomment %}
+    <main>
+      <div class="container-fluid">
+        <noscript>
+          <div class="row">
+            <div class="col-sm-12">
+              <div class="p-2 col-sm-12 bg-danger rounded text-center">
+                <h3>This site requires JavaScript!</h3>
+              </div>
+            </div>
+          </div>
+        </noscript>
+        <div class="row">
+          <div class="col-sm-12">
+            <h2>Select a font:</h2>
+            <div class="input-group mb-3">
+              <input class="form-control" id="fontSelector" type="file" accept=".nftr" onchange="loadFont(this.files[0])">
+              <label class="input-group-text" for="fontSelector">Select a font</label>
+              <input class="btn btn-outline-primary collapse" id="saveButton" type="button" onclick="saveFont()" value="Save">
+            </div>
+          </div>
+        </div>
+        <div class="collapse" id="editBox">
+          <div class="row">
+            <div class="col-xl-6">
+              <h2>Preview</h2>
+              <div class="row">
+                <div class="col-sm-6">
+                  <textarea id="input" onkeyup="updateBitmap()" placeholder="Type here"></textarea>
+                  <br>
+                  <canvas id="canvas" width="256" height="192"></canvas>
+                  <br>
+                  Background color:
+                  <input class="btn btn-outline-secondary" id="bgColor" type="color" value="#FF00FF" onchange="setBg(this.value)">
+                  <br>
+                  Background image:
+                  <input class="form-control" id="bgImage" placeholder="https://example.test/background.png" onchange="setBg(this.value)">
+                  Scale:
+                  <input class="form-control" id="previewScale" type="number" min="1" max="8" value="1" onchange="setScale(this.value)">
+                </div>
+                <div class="col-sm-6">
+                  <h3>Palette colors:</h3>
+                  <div class="btn-group brush-btn-box">
+                    <input class="btn btn-outline-secondary" id="palette0" type="color" value="#FF00FF" onchange="updatePalette(0)">
+                    <input class="btn btn-outline-secondary" id="palette1" type="color" value="#929292" onchange="updatePalette(1)">
+                    <input class="btn btn-outline-secondary" id="palette2" type="color" value="#434343" onchange="updatePalette(2)">
+                    <input class="btn btn-outline-secondary" id="palette3" type="color" value="#000000" onchange="updatePalette(3)">
+                  </div>
+                  <br><br>
+                  <div class="btn-group brush-btn-box">
+                    <input class="btn btn-outline-secondary" type="button" value="Clear 1" onclick="clearPalette(0)">
+                    <input class="btn btn-outline-secondary" type="button" value="Clear 2" onclick="clearPalette(1)">
+                    <input class="btn btn-outline-secondary" type="button" value="Clear 3" onclick="clearPalette(2)">
+                    <input class="btn btn-outline-secondary" type="button" value="Clear 4" onclick="clearPalette(3)">
+                  </div>
+                  <br><br>
+                  <input class="form-control bg-light text-dark" id="extraKerning" type="number" placeholder="Adjust kerning" onchange="updateExtraKerning()">
+                  <br>
+                  <h3>Font:</h3>
+                  <label for="inputFont">Input font</label>
+                  <input class="form-control bg-light text-dark" id="inputFont" type="text" placeholder="Sans-Serif" onchange="updateFont()">
+                  <div class="form-check form-check-inline">
+                    <input class="form-check-input" id="fontWeight" type="checkbox" onchange="updateFont()">
+                    <label class="form-check-label" for="fontWeight">Bold</label>
+                  </div>
+                  <div class="form-check form-check-switch form-check-inline">
+                    <input class="form-check-input" id="fontStyle" type="checkbox" onchange="updateFont()">
+                    <label class="form-check-label" for="fontStyle">Italic</label>
+                  </div>
+                  <br>
+                  <button class="btn btn-outline-secondary" type="button" onclick="generateFromFont()">Generate from font</button>
+                  <br>
+                  <label for="maxDifference"><abbr title="The maximum amount a pixel can be from the set color and still be set to it. Set to 0 for unlimited. Lower numbers make the font thinner.">Threshold</abbr></label>
+                  <input class="form-control bg-light text-dark" id="maxDifference" type="number" placeholder="0" min="0" max="255">
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-6">
+              <h2>Letter editing</h2>
+              <div class="row">
+                <div class="col-sm-6">
+                  <label for="letterInput">Letter</label>
+                  <input class="form-control bg-light text-dark" id="letterInput" type="text" placeholder="Letter" onkeyup="loadLetter()">
+                  <br>
+                  <table id="letter" onmouseenter="keyListener(true)" onmouseleave="keyListener(false)"></table>
+                  <br>
+                  <input class="btn btn-outline-secondary" type="button" onclick="addCharacters()" value="Add characters">
+                  <input class="btn btn-outline-secondary" type="button" onclick="removeCharacters()" value="Remove characters">
+                  <br><br>
+                  <input class="btn btn-outline-secondary" type="button" onclick="resize()" value="Resize font">
+                </div>
+                <div class="col-sm-6">
+                  <label><abbr title="While mouse is over the letter image, hold Shift for color 1 or press 1 - 4 for the respective color">Brush color</abbr></label>
+                  <div class="btn-group brush-btn-box">
+                    <input class="btn" id="brushColor0" type="button" onclick="updateBrush(0)" value=" ">
+                    <input class="btn" id="brushColor1" type="button" onclick="updateBrush(1)" value=" ">
+                    <input class="btn" id="brushColor2" type="button" onclick="updateBrush(2)" value=" ">
+                    <input class="btn" id="brushColor3" type="button" onclick="updateBrush(3)" value=" ">
+                  </div>
+                  <br><br>
+                  <label for="left"><abbr title="Whitespace to the left of the letter (the graphic should be fully against the left)">Left spacing</abbr></label>
+                  <input class="form-control bg-light text-dark" id="left" type="number" min="0" onchange="updateWidths()">
+                  <br>
+                  <label for="bitmapWidth"><abbr title="The width of just the letter graphic">Bitmap width</abbr></label>
+                  <input class="form-control bg-light text-dark" id="bitmapWidth" type="number" min="0" onchange="updateWidths()">
+                  <br>
+                  <label for="totalWidth"><abbr title="The total width, including left and right spacing">Total width</abbr></label>
+                  <input class="form-control bg-light text-dark" id="totalWidth" type="number" min="0" onchange="updateWidths()">
+                  <br>
+                  <input class="btn btn-outline-secondary" type="button" onclick="saveLetter()" value="Save">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <h2>Import</h2>
+              <div class="row">
+                <div class="col-sm-6">
+                  <div class="input-group">
+                    <input class="form-control" id="imageSelector" type="file" accept="image/*" onchange="importImage(this.files[0])">
+                    <label class="input-group-text" for="imageSelector">Import image</label>
+                  </div>
+                </div>
+                <br><br>
+                <div class="col-sm-6">
+                  <div class="input-group">
+                    <input class="form-control" id="sizesSelector" type="file" accept="application/json" onchange="importSizes(this.files[0])">
+                    <label class="input-group-text" for="sizesSelector">Import sizes</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <h2>Export</h2>
+              <button class="btn btn-outline-secondary" type="button" onclick="exportImage()">Export image</button>
+              <button class="btn btn-outline-secondary" type="button" onclick="exportSizes()">Export sizes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  {% include footer.html %}
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/js/bootstrap.bundle.min.js" integrity="sha384-ygbV9kiqUc6oa4msXn9868pTtWMgiQaeYH7/t7LECLbyPA2x65Kgf80OJFdroafW" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/encoding-japanese/1.0.30/encoding.min.js" integrity="sha512-rqL5c2sp6KdRdB27P16dSYF9J3/WrP+UHrKuzWiN6304wz0bzv1ZE8G+zieQGSnNfg9UasgKNOQzv4yir7+Prg==" crossorigin="anonymous"></script>
+  <script src="{{ site.baseurl }}/js/nftr.js"></script>
 </body>
 </html>
