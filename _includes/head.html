@@ -1,4 +1,12 @@
-<!-- _includes/head.html -->
-<meta charset="UTF-8">
-<title>{{ page.title }}</title>
-<link rel="stylesheet" href="/assets/css/main.css">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ page.title | default: site.title }}</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+  {% if page.description %}
+    <meta name="description" content="{{ page.description }}">
+  {% endif %}
+  {% if page.image %}
+    <meta name="og:image" content="{{ page.image }}">
+  {% endif %}
+</head>
